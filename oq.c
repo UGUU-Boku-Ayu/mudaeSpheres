@@ -213,10 +213,6 @@ void predictSpheres(char spheres[5][5], int sphereprediction[5][5])
 		for (int j = 0; j < 5; j++)
 		{
 			sphereprediction[i][j] = countAdjacent(spheres, i, j);
-			if (i == 2 && j == 2)
-			{
-				
-			}
 		}
 	}
 	if (spheres[1][1] == 't' && spheres[1][3] == 't' && spheres[3][1] == 't' && spheres[3][3] == 't')
