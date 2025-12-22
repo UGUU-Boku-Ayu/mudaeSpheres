@@ -221,15 +221,11 @@ void predictSpheres(char spheres[5][5], int sphereprediction[5][5])
 	}
 	if (spheres[1][1] == 't' && spheres[1][3] == 't' && spheres[3][1] == 't' && spheres[3][3] == 't')
 	{
-		sphereprediction[0][2] = -1;
-		sphereprediction[1][2] = -1;
-		sphereprediction[2][2] = -1;
-		sphereprediction[2][0] = -1;
-		sphereprediction[2][1] = -1;
-		sphereprediction[2][3] = -1;
-		sphereprediction[2][4] = -1;
-		sphereprediction[3][2] = -1;
-		sphereprediction[4][2] = -1;
+		for (int i = 0; i < 5; i++)
+		{
+			sphereprediction[i][2] = -1;
+			sphereprediction[2][i] = -1;
+		}
 	}
 }
 
