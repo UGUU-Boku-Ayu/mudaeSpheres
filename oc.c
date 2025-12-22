@@ -8,7 +8,7 @@
 
 
 
-static void drawBoard(char sphere[5][5], char sphereprediction[5][5], int selRow, int selCol)
+static void drawBoard(char spheres[5][5], char sphereprediction[5][5], int selRow, int selCol)
 {
 	wprintf(L"       a      b      c      d      e        Info:\n");
 	wprintf(L"  ┌────────────────────────────────────┐\n");
@@ -19,7 +19,7 @@ static void drawBoard(char sphere[5][5], char sphereprediction[5][5], int selRow
 			if (i == selRow && j == selCol)
 				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			else
-				setColour(getBackgroundColourForValue(sphere[i][j]));
+				setColour(getBackgroundColourForValue(spheres[i][j]));
 
 			wprintf(L"┌────┐ ");
 			setColour(7);
@@ -50,10 +50,10 @@ static void drawBoard(char sphere[5][5], char sphereprediction[5][5], int selRow
 			if (i == selRow && j == selCol)
 				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			else
-				setColour(getBackgroundColourForValue(sphere[i][j]));
+				setColour(getBackgroundColourForValue(spheres[i][j]));
 
-			if (sphere[i][j] != ' ')
-				wprintf(L"│  %c │ ", sphere[i][j]);
+			if (spheres[i][j] != ' ')
+				wprintf(L"│  %c │ ", spheres[i][j]);
 			else
 				wprintf(L"│  %c │ ", sphereprediction[i][j]);
 			setColour(7);
@@ -82,7 +82,7 @@ static void drawBoard(char sphere[5][5], char sphereprediction[5][5], int selRow
 			if (i == selRow && j == selCol)
 				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			else
-				setColour(getBackgroundColourForValue(sphere[i][j]));
+				setColour(getBackgroundColourForValue(spheres[i][j]));
 
 			wprintf(L"└────┘ ");
 			setColour(7);
@@ -113,13 +113,13 @@ static void drawBoard(char sphere[5][5], char sphereprediction[5][5], int selRow
 
 
 }
-static int teal(char sphere[5][5], int x, int y)
+static int teal(char spheres[5][5], int x, int y)
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			if (sphere[i][j] == 't')
+			if (spheres[i][j] == 't')
 			{
 				if (!(i == x || j == y || i - j == x - y || i + j == x + y))
 				{
@@ -130,13 +130,13 @@ static int teal(char sphere[5][5], int x, int y)
 	}
 	return 1;
 }
-static int yellow(char sphere[5][5], int x, int y)
+static int yellow(char spheres[5][5], int x, int y)
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			if (sphere[i][j] == 'y')
+			if (spheres[i][j] == 'y')
 			{
 				if (!(i - j == x - y || i + j == x + y))
 				{
@@ -147,7 +147,7 @@ static int yellow(char sphere[5][5], int x, int y)
 	}
 	return 1;
 }
-static int orange(char sphere[5][5], int x, int y)
+static int orange(char spheres[5][5], int x, int y)
 {
 	int hasOrange = 0;
 
@@ -155,7 +155,7 @@ static int orange(char sphere[5][5], int x, int y)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			if (sphere[i][j] == 'o')
+			if (spheres[i][j] == 'o')
 			{
 				hasOrange = 1;
 				int adjacent = 0;
@@ -175,13 +175,13 @@ static int orange(char sphere[5][5], int x, int y)
 
 
 
-static int green(char sphere[5][5], int x, int y)
+static int green(char spheres[5][5], int x, int y)
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			if (sphere[i][j] == 'g')
+			if (spheres[i][j] == 'g')
 			{
 				if (!(i == x || j == y))
 				{
@@ -192,7 +192,7 @@ static int green(char sphere[5][5], int x, int y)
 	}
 	return 1;
 }
-static int blue(char sphere[5][5], int x, int y)
+static int blue(char spheres[5][5], int x, int y)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -200,19 +200,19 @@ static int blue(char sphere[5][5], int x, int y)
 		{
 			if (i == x || j == y || i - j == x - y || i + j == x + y)
 			{
-				if (sphere[i][j] == 'b') return 1;
+				if (spheres[i][j] == 'b') return 1;
 			}
 		}
 	}
 	return 0;
 }
-static int red(char sphere[5][5], int x, int y)
+static int red(char spheres[5][5], int x, int y)
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			if (sphere[i][j] == 'r')
+			if (spheres[i][j] == 'r')
 			{
 				if (!(i == x && j == y))
 				{
@@ -224,34 +224,34 @@ static int red(char sphere[5][5], int x, int y)
 	}
 	return 1;
 }
-static int orangePossible(char sphere[5][5], int x, int y)
+static int orangePossible(char spheres[5][5], int x, int y)
 {
 	int orangeSpawnPlaceCount = 0;
 	if (x > 0)
-		if (sphere[x - 1][y] == 'o' || sphere[x - 1][y] == ' ') orangeSpawnPlaceCount += 1;
+		if (spheres[x - 1][y] == 'o' || spheres[x - 1][y] == ' ') orangeSpawnPlaceCount += 1;
 	if (y > 0)
-		if (sphere[x][y - 1] == 'o' || sphere[x][y - 1] == ' ') orangeSpawnPlaceCount += 1;
+		if (spheres[x][y - 1] == 'o' || spheres[x][y - 1] == ' ') orangeSpawnPlaceCount += 1;
 	if (x < 4)
-		if (sphere[x + 1][y] == 'o' || sphere[x + 1][y] == ' ') orangeSpawnPlaceCount += 1;
+		if (spheres[x + 1][y] == 'o' || spheres[x + 1][y] == ' ') orangeSpawnPlaceCount += 1;
 	if (y < 4)
-		if (sphere[x][y + 1] == 'o' || sphere[x][y + 1] == ' ') orangeSpawnPlaceCount += 1;
+		if (spheres[x][y + 1] == 'o' || spheres[x][y + 1] == ' ') orangeSpawnPlaceCount += 1;
 
 	return (orangeSpawnPlaceCount >= 2);
 }
-static int predictSphere(char sphere[5][5], char sphereprediction[5][5])
+static int predictSpheres(char spheres[5][5], char sphereprediction[5][5])
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
 			sphereprediction[i][j] = 'x';
-			if (!teal(sphere, i, j)) sphereprediction[i][j] = ' ';
-			if (!green(sphere, i, j)) sphereprediction[i][j] = ' ';
-			if (!yellow(sphere, i, j)) sphereprediction[i][j] = ' ';
-			if (!orange(sphere, i, j)) sphereprediction[i][j] = ' ';
-			if (!red(sphere, i, j)) sphereprediction[i][j] = ' ';
-			if (blue(sphere, i, j)) sphereprediction[i][j] = ' ';
-			if (!orangePossible(sphere, i, j)) sphereprediction[i][j] = ' ';
+			if (!teal(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (!green(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (!yellow(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (!orange(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (!red(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (blue(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (!orangePossible(spheres, i, j)) sphereprediction[i][j] = ' ';
 			if (i == 2 && j == 2) sphereprediction[i][j] = ' ';
 		}
 	}
@@ -260,12 +260,12 @@ static int predictSphere(char sphere[5][5], char sphereprediction[5][5])
 
 int oc(void)
 {
-	char sphere[5][5];
+	char spheres[5][5];
 	char sphereprediction[5][5] = { 0 };
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 5; j++)
 		{
-			sphere[i][j] = ' ';
+			spheres[i][j] = ' ';
 			sphereprediction[i][j] = 'x';
 		}
 			
@@ -273,23 +273,23 @@ int oc(void)
 	int originalMode = _setmode(_fileno(stdout), _O_WTEXT);
 
 	int row = 0, col = 0;
-	predictSphere(sphere, sphereprediction);
+	predictSpheres(spheres, sphereprediction);
 	while (1) {
 		resetCursor();
-		drawBoard(sphere, sphereprediction, row, col);
+		drawBoard(spheres, sphereprediction, row, col);
 
 		int ch = _getch();
 		if (ch == 27) break; // ESC
 		if (ch == 'b' || ch == 'y' || ch == 'r' ||
 			ch == 'g' || ch == 'o' || ch == 't')
 		{
-			sphere[row][col] = ch;
-			predictSphere(sphere, sphereprediction);
+			spheres[row][col] = ch;
+			predictSpheres(spheres, sphereprediction);
 		}
 		if (ch == 8)
 		{
-			sphere[row][col] = ' ';
-			predictSphere(sphere, sphereprediction);
+			spheres[row][col] = ' ';
+			predictSpheres(spheres, sphereprediction);
 		}
 		if (ch == 224) {
 			ch = _getch();
@@ -299,8 +299,8 @@ int oc(void)
 			if (ch == 77 && col < 4) col++; // right
 			if (ch == 0x53)
 			{
-				sphere[row][col] = ' ';
-				predictSphere(sphere, sphereprediction);
+				spheres[row][col] = ' ';
+				predictSpheres(spheres, sphereprediction);
 			}
 		}
 		

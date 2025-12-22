@@ -8,7 +8,7 @@
 
 
 
-static void drawBoard(char sphere[5][5], int sphereprediction[5][5], int selRow, int selCol)
+static void drawBoard(char spheres[5][5], int sphereprediction[5][5], int selRow, int selCol)
 {
 	wprintf(L"       a      b      c      d      e        Info:\n");
 	wprintf(L"  ┌────────────────────────────────────┐\n");
@@ -19,7 +19,7 @@ static void drawBoard(char sphere[5][5], int sphereprediction[5][5], int selRow,
 			if (i == selRow && j == selCol)
 				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			else
-				setColour(getBackgroundColourForValue(sphere[i][j]));
+				setColour(getBackgroundColourForValue(spheres[i][j]));
 
 			wprintf(L"┌────┐ ");
 			setColour(7);
@@ -48,10 +48,10 @@ static void drawBoard(char sphere[5][5], int sphereprediction[5][5], int selRow,
 			if (i == selRow && j == selCol)
 				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			else
-				setColour(getBackgroundColourForValue(sphere[i][j]));
+				setColour(getBackgroundColourForValue(spheres[i][j]));
 
-			if(sphere[i][j] != ' ')
-				wprintf(L"│  %c │ ", sphere[i][j]);
+			if(spheres[i][j] != ' ')
+				wprintf(L"│  %c │ ", spheres[i][j]);
 			else if (sphereprediction[i][j] > 0)
 				wprintf(L"│  %d │ ", sphereprediction[i][j]);
 			else if (sphereprediction[i][j] == 0)
@@ -86,7 +86,7 @@ static void drawBoard(char sphere[5][5], int sphereprediction[5][5], int selRow,
 			if (i == selRow && j == selCol)
 				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			else
-				setColour(getBackgroundColourForValue(sphere[i][j]));
+				setColour(getBackgroundColourForValue(spheres[i][j]));
 
 			wprintf(L"└────┘ ");
 			setColour(7);
@@ -119,7 +119,7 @@ static void drawBoard(char sphere[5][5], int sphereprediction[5][5], int selRow,
 }
 
 
-countAdjacentPurple(char sphere[5][5], int x, int y)
+countAdjacentPurple(char spheres[5][5], int x, int y)
 {
 	int score = 0;
 
@@ -133,32 +133,32 @@ countAdjacentPurple(char sphere[5][5], int x, int y)
 
 		if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5)
 		{
-			if (sphere[nx][ny] == 'p') score += 1;
+			if (spheres[nx][ny] == 'p') score += 1;
 		}
 	}
 
 	return score;
 }
 
-int sphereScore(char sphere[5][5], int x, int y)
+int sphereScore(char spheres[5][5], int x, int y)
 {
 	int total = 0;
-	switch (sphere[x][y])
+	switch (spheres[x][y])
 	{
 	case 't': 
-		total = (1 - countAdjacentPurple(sphere, x, y));
+		total = (1 - countAdjacentPurple(spheres, x, y));
 		if (total > 0) return total;
 		goto purpleFound;
 	case 'g': 
-		total = (2 - countAdjacentPurple(sphere, x, y));
+		total = (2 - countAdjacentPurple(spheres, x, y));
 		if (total > 0) return total;
 		goto purpleFound;
 	case 'y': 
-		total = (3 - countAdjacentPurple(sphere, x, y));
+		total = (3 - countAdjacentPurple(spheres, x, y));
 		if (total > 0) return total;
 		goto purpleFound;
 	case 'o': 
-		total = (4 - countAdjacentPurple(sphere, x, y));
+		total = (4 - countAdjacentPurple(spheres, x, y));
 		if (total > 0) return total;
 		goto purpleFound;
 	case 'b': 
@@ -172,7 +172,7 @@ int sphereScore(char sphere[5][5], int x, int y)
 	}
 }
 
-int countAdjacent(char sphere[5][5], int x, int y)
+int countAdjacent(char spheres[5][5], int x, int y)
 {
 	int score = 0;
 	int adjacentNonEmptyOrPurple = 0;
@@ -186,13 +186,13 @@ int countAdjacent(char sphere[5][5], int x, int y)
 
 		if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5)
 		{
-			int s = sphereScore(sphere, nx, ny);
+			int s = sphereScore(spheres, nx, ny);
 
 			if (s == -1) 
 				return -1;
 			if (s != -2)
 				score += s;
-				if (sphere[nx][ny] != ' ' && sphere[nx][ny] != 'p') {
+				if (spheres[nx][ny] != ' ' && spheres[nx][ny] != 'p') {
 					adjacentNonEmptyOrPurple = 1;
 				}
 
@@ -206,31 +206,47 @@ int countAdjacent(char sphere[5][5], int x, int y)
 }
 
 
-void predictSphere(char sphere[5][5], int sphereprediction[5][5])
+void predictSpheres(char spheres[5][5], int sphereprediction[5][5])
 {
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			sphereprediction[i][j] = countAdjacent(sphere, i, j);
+			sphereprediction[i][j] = countAdjacent(spheres, i, j);
+			if (i == 2 && j == 2)
+			{
+				
+			}
 		}
+	}
+	if (spheres[1][1] == 't' && spheres[1][3] == 't' && spheres[3][1] == 't' && spheres[3][3] == 't')
+	{
+		sphereprediction[0][2] = -1;
+		sphereprediction[1][2] = -1;
+		sphereprediction[2][2] = -1;
+		sphereprediction[2][0] = -1;
+		sphereprediction[2][1] = -1;
+		sphereprediction[2][3] = -1;
+		sphereprediction[2][4] = -1;
+		sphereprediction[3][2] = -1;
+		sphereprediction[4][2] = -1;
 	}
 }
 
 int oq(void)
 {
-	char sphere[5][5];
+	char spheres[5][5];
 	int sphereprediction[5][5] = { 0 };
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 5; j++)
 		{
-			sphere[i][j] = ' ';
+			spheres[i][j] = ' ';
 		}
 	int row = 0, col = 0;
 	clearScreen();
 	while (1) {
 		resetCursor();
-		drawBoard(sphere, sphereprediction, row, col);
+		drawBoard(spheres, sphereprediction, row, col);
 
 		int ch = _getch();
 		if (ch == 27) break;
@@ -238,13 +254,13 @@ int oq(void)
 			ch == 'g' || ch == 'o' || ch == 't'
 			)
 		{
-			sphere[row][col] = ch;
-			predictSphere(sphere, sphereprediction);
+			spheres[row][col] = ch;
+			predictSpheres(spheres, sphereprediction);
 		}
 		if (ch == 8)
 		{
-			sphere[row][col] = ' ';
-			predictSphere(sphere, sphereprediction);
+			spheres[row][col] = ' ';
+			predictSpheres(spheres, sphereprediction);
 		}
 		if (ch == 224) {
 			ch = _getch();
@@ -254,8 +270,8 @@ int oq(void)
 			if (ch == 77 && col < 4) col++;
 			if (ch == 0x53)
 			{
-				sphere[row][col] = ' ';
-				predictSphere(sphere, sphereprediction);
+				spheres[row][col] = ' ';
+				predictSpheres(spheres, sphereprediction);
 			}
 		}
 	}
