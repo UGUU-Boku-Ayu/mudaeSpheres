@@ -1,44 +1,12 @@
 #include "oc.h"
 #include "oq.h"
 #include "oCommon.h"
-#include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <wchar.h>
+#ifdef _WIN32
 #include <conio.h>
-#include <windows.h>
-
-HANDLE hOut;
-static void hideCursor(void)
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO cursorInfo;
-
-	GetConsoleCursorInfo(hConsole, &cursorInfo);
-	cursorInfo.bVisible = FALSE;
-	SetConsoleCursorInfo(hConsole, &cursorInfo);
-}
-static void showCursor(void)
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO cursorInfo;
-
-	GetConsoleCursorInfo(hConsole, &cursorInfo);
-	cursorInfo.bVisible = TRUE;
-	SetConsoleCursorInfo(hConsole, &cursorInfo);
-}
-static void clearScreen(void) {
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD count, cellCount;
-	COORD home = { 0, 0 };
-
-	GetConsoleScreenBufferInfo(hOut, &csbi);
-	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-
-	FillConsoleOutputCharacter(hOut, ' ', cellCount, home, &count);
-	FillConsoleOutputAttribute(hOut, csbi.wAttributes, cellCount, home, &count);
-	SetConsoleCursorPosition(hOut, home);
-}
+#endif
 void oh(void)
 {
 	clearScreen();
@@ -49,7 +17,6 @@ void oh(void)
 int main(void)
 {
 	hideCursor();
-	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	int originalMode = _setmode(_fileno(stdout), _O_WTEXT);
 	wprintf(L"  Options:\n    1. $oh Solver\n    2. $oc Solver\n    3. $oq Solver\n    ESC. Exit");
 	while (1)

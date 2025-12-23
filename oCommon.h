@@ -1,6 +1,7 @@
 #pragma once
 #ifndef MUDAE_OCOMMON
 #define MUDAE_OCOMMON
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 WORD getBackgroundColourForValue(char value);
 WORD getForegroundColourForValue(char value);

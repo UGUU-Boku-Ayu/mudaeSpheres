@@ -1,9 +1,9 @@
-#include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <wchar.h>
+#ifdef _WIN32
 #include <conio.h>
-#include <windows.h>
+#endif
 #include "oCommon.h"
 
 
@@ -279,6 +279,7 @@ void predictSpheres(char spheres[5][5], int sphereprediction[5][5])
 
 int oq(void)
 {
+	int originalMode = _setmode(_fileno(stdout), _O_WTEXT);
 	char spheres[5][5];
 	int sphereprediction[5][5] = { 0 };
 	for (int i = 0; i < 5; i++)
@@ -319,4 +320,5 @@ int oq(void)
 			}
 		}
 	}
+	_setmode(_fileno(stdout), originalMode);
 }

@@ -1,9 +1,9 @@
-#include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <wchar.h>
+#ifdef _WIN32
 #include <conio.h>
-#include <windows.h>
+#endif
 #include "oCommon.h"
 
 
