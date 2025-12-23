@@ -187,14 +187,36 @@ int countAdjacent(char spheres[5][5], int x, int y)
 		if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5)
 		{
 			int s = sphereScore(spheres, nx, ny);
+			if (s >= 1) score++;
 
-			if (s == -1) 
+		}
+	}
+	return score;
+}
+
+int scoreAdjacent(char spheres[5][5], int x, int y)
+{
+	int score = 0;
+	int adjacentNonEmptyOrPurple = 0;
+	int dx[8] = { -1, -1, -1,  0, 0, 1, 1, 1 };
+	int dy[8] = { -1,  0,  1, -1, 1,-1, 0, 1 };
+
+	for (int i = 0; i < 8; i++)
+	{
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5)
+		{
+			int s = sphereScore(spheres, nx, ny);
+
+			if (s == -1)
 				return -1;
 			if (s != -2)
 				score += s;
-				if (spheres[nx][ny] != ' ' && spheres[nx][ny] != 'p') {
-					adjacentNonEmptyOrPurple = 1;
-				}
+			if (spheres[nx][ny] != ' ' && spheres[nx][ny] != 'p') {
+				adjacentNonEmptyOrPurple = 1;
+			}
 
 		}
 	}
@@ -206,21 +228,51 @@ int countAdjacent(char spheres[5][5], int x, int y)
 }
 
 
+void removeImpossibleSpaces(char spheres[5][5], int sphereprediction[5][5], int purpleCount)
+{
+	int adjacentCount = 0;
+	for (int i = 1; i < 4; i += 2)
+	{
+		for (int j = 1; j < 4; j += 2)
+		{
+			if (spheres[i][j] == 't') adjacentCount += 1;
+			if (spheres[i][j] == 'g') adjacentCount += 2;
+			if (spheres[i][j] == 'y') adjacentCount += 3;
+			if (spheres[i][j] == 'o') adjacentCount += 4;
+			adjacentCount -= countAdjacentPurple(spheres, i, j);
+		}
+	}
+	if (adjacentCount <= 7) sphereprediction[2][2] = -1;
+	if (adjacentCount <= (4 - purpleCount))
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				if (countAdjacent(spheres, i, j) >= 2) sphereprediction[i][j] = -1;
+			}
+		}
+	}
+}
+
 void predictSpheres(char spheres[5][5], int sphereprediction[5][5])
 {
+	int purpleCount = 0;
+	int adjacentToSelectedSphere = 0;
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			sphereprediction[i][j] = countAdjacent(spheres, i, j);
+			if (spheres[i][j] == 'p') purpleCount++;
+			sphereprediction[i][j] = scoreAdjacent(spheres, i, j);
+			if (sphereprediction[i][j] != 0) adjacentToSelectedSphere++;
 		}
 	}
-	if (spheres[1][1] == 't' && spheres[1][3] == 't' && spheres[3][1] == 't' && spheres[3][3] == 't')
+	if (adjacentToSelectedSphere >= 21)
 	{
-		for (int i = 0; i < 5; i++)
+		if (spheres[1][1] != ' ' && spheres[1][3] != ' ' && spheres[3][1] != ' ' && spheres[3][3] != ' ')
 		{
-			sphereprediction[i][2] = -1;
-			sphereprediction[2][i] = -1;
+			removeImpossibleSpaces(spheres, sphereprediction, purpleCount);
 		}
 	}
 }
