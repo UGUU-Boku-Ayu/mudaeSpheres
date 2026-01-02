@@ -1,8 +1,12 @@
-#include <io.h>
+
 #include <fcntl.h>
 #include <wchar.h>
 #ifdef _WIN32
 #include <conio.h>
+#include <io.h>
+#elif defined(__linux__)
+#define _XOPEN_SOURCE_EXTENDED 1
+#include <ncursesw/curses.h>
 #endif
 #include "oCommon.h"
 
@@ -10,22 +14,49 @@
 
 static void drawBoard(char spheres[5][5], char sphereprediction[5][5], int selRow, int selCol)
 {
+#ifdef _WIN32
 	wprintf(L"       a      b      c      d      e        Info:\n");
 	wprintf(L"  ┌────────────────────────────────────┐\n");
+#elif defined(__linux__)
+	mvaddwstr(0, 0, L"       a      b      c      d      e        Info:");
+	mvaddwstr(1, 0, L"  ┌────────────────────────────────────┐");
+#endif
 	for (int i = 0; i < 5; i++) {
+#ifdef _WIN32
 		wprintf(L"  │ ");
+#elif defined(__linux__)
+		mvaddwstr(2 + (3 * i), 0, L"  │ ");
+#endif
 		for (int j = 0; j < 5; j++)
 		{
+#ifdef _WIN32
 			if (i == selRow && j == selCol)
-				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+				setColour(getBackgroundColourForValue('w'));
 			else
 				setColour(getBackgroundColourForValue(spheres[i][j]));
-
 			wprintf(L"┌────┐ ");
 			setColour(7);
+#elif defined(__linux__)
+			if (i == selRow && j == selCol)
+			{
+				setColour(getBackgroundColourForValue('w'));
+				addwstr(L"┌────┐ ");
+				removeColour(getBackgroundColourForValue('w'));
+			}
+				
+			else
+			{
+				setColour(getBackgroundColourForValue(spheres[i][j]));
+				addwstr(L"┌────┐ ");
+				removeColour(getBackgroundColourForValue(spheres[i][j]));
+			}
+				
+			
+#endif
 		}
 		switch (i)
 		{
+#ifdef _WIN32
 		case(0):
 			wprintf(L"│    Fill the squares with your selections in the $oc sphere minigame.");
 			break;
@@ -43,12 +74,37 @@ static void drawBoard(char spheres[5][5], char sphereprediction[5][5], int selRo
 			break;
 			//case(4):
 			//	wprintf(L"│");
+#elif defined(__linux__)
+		case(0):
+			addwstr(L"│    Fill the squares with your selections in the $oc sphere minigame.");
+			break;
+		case(1):
+			addwstr(L"│");
+			break;
+		case(2):
+			addwstr(L"│    ← - Left   ↑ - Up   → - Right   ↓ - Down");
+			break;
+		case(3):
+			addwstr(L"│");
+			break;
+		case(4):
+			addwstr(L"│    esc - Return");
+			break;
+#endif
 		}
+#ifdef _WIN32
 		wprintf(L"\n %d│ ", i + 1);
+#elif defined(__linux__)
+		wchar_t buf[256];
+		swprintf(buf, 256, L" %d│ ", i + 1);
+		mvaddwstr(3 + (3 * i), 0, buf);
+
+#endif
 		for (int j = 0; j < 5; j++)
 		{
+#ifdef _WIN32
 			if (i == selRow && j == selCol)
-				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+				setColour(getBackgroundColourForValue('w'));
 			else
 				setColour(getBackgroundColourForValue(spheres[i][j]));
 
@@ -57,9 +113,29 @@ static void drawBoard(char spheres[5][5], char sphereprediction[5][5], int selRo
 			else
 				wprintf(L"│  %c │ ", sphereprediction[i][j]);
 			setColour(7);
+#elif defined(__linux__)
+			if (spheres[i][j] != ' ')
+				swprintf(buf, 256, L"│  %c │ ", spheres[i][j]);
+			else
+				swprintf(buf, 256, L"│  %c │ ", sphereprediction[i][j]);
+			if (i == selRow && j == selCol)
+			{
+				setColour(getBackgroundColourForValue('w'));
+				addwstr(buf);
+				removeColour(getBackgroundColourForValue('w'));
+			}
+			else
+			{
+				setColour(getBackgroundColourForValue(spheres[i][j]));
+				addwstr(buf);
+				removeColour(getBackgroundColourForValue(spheres[i][j]));
+			}
+#endif
 		}
+
 		switch (i)
 		{
+#ifdef _WIN32
 		case(0):
 			wprintf(L"│    The squares containing 'x' have a chance to contain the red sphere.");
 			break;
@@ -75,20 +151,57 @@ static void drawBoard(char spheres[5][5], char sphereprediction[5][5], int selRo
 		case(4):
 			wprintf(L"│");
 			break;
+#elif defined(__linux__)
+		case(0):
+			addwstr(L"│    The squares containing 'x' have a chance to contain the red sphere.");
+			break;
+		case(1):
+			addwstr(L"│    Controls:");
+			break;
+		case(2):
+			addwstr(L"│");
+			break;
+		case(3):
+			addwstr(L"│    backspace/del - Clear");
+			break;
+		case(4):
+			addwstr(L"│");
+			break;
+#endif
 		}
+#ifdef _WIN32
 		wprintf(L"\n  │ ");
+#elif defined(__linux__)
+		mvaddwstr(4 + (3 * i), 0, L"  │ ");
+#endif
 		for (int j = 0; j < 5; j++)
 		{
+#ifdef _WIN32
 			if (i == selRow && j == selCol)
-				setColour(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+				setColour(getBackgroundColourForValue('w'));
 			else
 				setColour(getBackgroundColourForValue(spheres[i][j]));
 
 			wprintf(L"└────┘ ");
 			setColour(7);
+#elif defined(__linux__)
+			if (i == selRow && j == selCol)
+			{
+				setColour(getBackgroundColourForValue('w'));
+				addwstr(L"└────┘ ");
+				removeColour(getBackgroundColourForValue('w'));
+			}
+			else
+			{
+				setColour(getBackgroundColourForValue(spheres[i][j]));
+				addwstr(L"└────┘ ");
+				removeColour(getBackgroundColourForValue(spheres[i][j]));
+			}
+#endif
 		}
 		switch (i)
 		{
+#ifdef _WIN32
 		case(0):
 			wprintf(L"│    Choose the spaces that eliminate the most possibilities.");
 			break;
@@ -109,6 +222,27 @@ static void drawBoard(char spheres[5][5], char sphereprediction[5][5], int selRo
 			wprintf(L"\n  └────────────────────────────────────┘\n");
 		else
 			wprintf(L"\n");
+#elif defined(__linux__)
+			case(0):
+				addwstr(L"│    Choose the spaces that eliminate the most possibilities.");
+				break;
+			case(1):
+				addwstr(L"│");
+				break;
+			case(2):
+				addwstr(L"│    b - Blue   t - Teal   g - Green   y - Yellow   o - Orange   r - Red");
+				break;
+			case(3):
+				addwstr(L"│");
+				break;
+			case(4):
+				addwstr(L"│");
+				break;
+		}
+		if (i == 4)
+			mvaddwstr(5 + (3 * i), 0, L"  └────────────────────────────────────┘");
+		refresh();
+#endif
 	}
 
 
@@ -268,13 +402,15 @@ int oc(void)
 			spheres[i][j] = ' ';
 			sphereprediction[i][j] = 'x';
 		}
-			
 
-	int originalMode = _setmode(_fileno(stdout), _O_WTEXT);
+
+	//int originalMode = _setmode(_fileno(stdout), _O_WTEXT);
 
 	int row = 0, col = 0;
 	predictSpheres(spheres, sphereprediction);
-	while (1) {
+#ifdef _WIN32
+	while (1)
+	{
 		resetCursor();
 		drawBoard(spheres, sphereprediction, row, col);
 
@@ -303,9 +439,45 @@ int oc(void)
 				predictSpheres(spheres, sphereprediction);
 			}
 		}
-		
+	}
+#elif defined(__linux__)
+
+
+	initscr();
+	cbreak();
+	noecho(); 
+	keypad(stdscr, TRUE);
+	nodelay(stdscr, FALSE);
+
+	while (1) 
+	{
+		resetCursor();
+		drawBoard(spheres, sphereprediction, row, col);
+
+		int ch = getch();
+
+		if (ch == 27) break; // ESC
+		if (ch == KEY_UP && row > 0) row--;
+		if (ch == KEY_DOWN && row < 4) row++;
+		if (ch == KEY_LEFT && col > 0) col--;
+		if (ch == KEY_RIGHT && col < 4) col++;
+
+		if (ch == 'b' || ch == 'y' || ch == 'r' ||
+			ch == 'g' || ch == 'o' || ch == 't')
+		{
+			spheres[row][col] = ch;
+			predictSpheres(spheres, sphereprediction);
+		}
+
+		if (ch == KEY_BACKSPACE || ch == 127) {
+			spheres[row][col] = ' ';
+			predictSpheres(spheres, sphereprediction);
+		}
 	}
 
-	_setmode(_fileno(stdout), originalMode);
+	endwin();
+#endif
+
+	//_setmode(_fileno(stdout), originalMode);
 	return 0;
 }
