@@ -71,13 +71,13 @@ int main(void)
 #endif
 #ifdef _WIN32
 	hideCursor();
-	wprintf(L"  Options:\n    1. $oh Solver\n    2. $oc Solver\n    3. $oq Solver\n    ESC. Exit");
+	wprintf(L"  Options:\n    1. $oh Solver\n    2. $oc Solver\n    3. $oq Solver  (Very WIP, triple check results before trusting them)\n    ESC. Exit");
 #elif defined(__linux__)
 	erase();
 	mvaddwstr(0, 0, L"  Options:");
 	mvaddwstr(1, 0, L"    1. $oh Solver");
 	mvaddwstr(2, 0, L"    2. $oc Solver");
-	mvaddwstr(3, 0, L"    3. $oq Solver");
+	mvaddwstr(3, 0, L"    3. $oq Solver (Very WIP, triple check results before trusting them)");
 	mvaddwstr(4, 0, L"    ESC. Exit");
 	refresh();
 #endif
@@ -92,13 +92,13 @@ int main(void)
 		{
 #ifdef _WIN32
 			clearScreen();
-			wprintf(L"  Options:\n    1. $oh Solver\n    2. $oc Solver\n    3. $oq Solver\n    ESC. Exit");
+			wprintf(L"  Options:\n    1. $oh Solver\n    2. $oc Solver\n    3. $oq Solver  (Very WIP, triple check results before trusting them)\n    ESC. Exit");
 #elif defined(__linux__)
 			erase();
 			mvaddwstr(0, 0, L"  Options:");
 			mvaddwstr(1, 0, L"    1. $oh Solver");
 			mvaddwstr(2, 0, L"    2. $oc Solver");
-			mvaddwstr(3, 0, L"    3. $oq Solver");
+			mvaddwstr(3, 0, L"    3. $oq Solver  (Very WIP, triple check results before trusting them)");
 			mvaddwstr(4, 0, L"    ESC. Exit");
 			refresh();
 #endif

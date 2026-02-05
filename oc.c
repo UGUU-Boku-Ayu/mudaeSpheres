@@ -372,6 +372,32 @@ static int orangePossible(char spheres[5][5], int x, int y)
 
 	return (orangeSpawnPlaceCount >= 2);
 }
+
+static int isDiagonal(int x1, int x2, int y1, int y2)
+{
+	int dx = x1 - x2;
+	if (dx < 0) dx = -dx;
+
+	int dy = y1 - y2;
+	if (dy < 0) dy = -dy;
+
+	return (dx == dy && dx != 0);
+}
+
+static int yellowPossible(char spheres[5][5], int x1, int y1)
+{
+	int yellowSpawnPlaceCount = 0;
+	for (int x2 = 0; x2 < 5; x2++)
+	{
+		for (int y2 = 0; y2 < 5; y2++)
+		{
+			if(isDiagonal(x1, x2, y1, y2) && (spheres[x2][y2] == 'y' || spheres[x2][y2] == ' ')) yellowSpawnPlaceCount += 1;
+		}
+	}
+
+	
+	return (yellowSpawnPlaceCount >= 3);
+}
 static int predictSpheres(char spheres[5][5], char sphereprediction[5][5])
 {
 	for (int i = 0; i < 5; i++)
@@ -386,6 +412,7 @@ static int predictSpheres(char spheres[5][5], char sphereprediction[5][5])
 			if (!red(spheres, i, j)) sphereprediction[i][j] = ' ';
 			if (blue(spheres, i, j)) sphereprediction[i][j] = ' ';
 			if (!orangePossible(spheres, i, j)) sphereprediction[i][j] = ' ';
+			if (!yellowPossible(spheres, i, j)) sphereprediction[i][j] = ' ';
 			if (i == 2 && j == 2) sphereprediction[i][j] = ' ';
 		}
 	}
