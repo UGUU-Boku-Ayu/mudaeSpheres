@@ -405,13 +405,13 @@ void predictSpheres(char spheres[5][5], int sphereprediction[5][5])
 			if (sphereprediction[i][j] != 0) adjacentToSelectedSphere++;
 		}
 	}
-	if (adjacentToSelectedSphere >= 21)
-	{
-		if (spheres[1][1] != ' ' && spheres[1][3] != ' ' && spheres[3][1] != ' ' && spheres[3][3] != ' ')
-		{
-			removeImpossibleSpaces(spheres, sphereprediction, purpleCount);
-		}
-	}
+	//if (adjacentToSelectedSphere >= 21)
+	//{
+	//	if (spheres[1][1] != ' ' && spheres[1][3] != ' ' && spheres[3][1] != ' ' && spheres[3][3] != ' ')
+	//	{
+	//		removeImpossibleSpaces(spheres, sphereprediction, purpleCount);
+	//	}
+	//}
 }
 
 int oq(void)
